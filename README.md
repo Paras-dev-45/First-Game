@@ -25,3 +25,4 @@ Endless Runner/
 - Press **LEFT/RIGHT ARROW** or **SWIPE LEFT/RIGHT** to switch lanes
 - Avoid obstacles and collect coins
 - Survive as long as possible and beat your high score!
+
