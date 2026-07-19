@@ -1,0 +1,437 @@
+/* ============================================================
+   SHADOW SPRINT — style.css
+   Full game UI styling: layout, HUD, overlays, buttons,
+   animations, and mobile responsiveness.
+============================================================ */
+
+/* ============================================================
+   1. CSS RESET & ROOT VARIABLES
+============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Brand colors */
+  --color-bg:         #0a0a1a;
+  --color-primary:    #7c3aed;       /* Purple */
+  --color-accent:     #f59e0b;       /* Gold / coin color */
+  --color-danger:     #ef4444;       /* Red for game over */
+  --color-success:    #10b981;       /* Green for power-ups */
+  --color-text:       #f1f5f9;
+  --color-text-dim:   #94a3b8;
+  --color-overlay-bg: rgba(5, 5, 20, 0.88);
+
+  /* Typography */
+  --font-game: 'Orbitron', 'Courier New', monospace;
+
+  /* Sizing */
+  --hud-height: 56px;
+  --border-radius: 12px;
+}
+
+/* ============================================================
+   2. BASE — full viewport, dark background, no scroll
+============================================================ */
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;                  /* No scroll bars on a game */
+  background-color: var(--color-bg);
+  font-family: var(--font-game);
+  color: var(--color-text);
+  /* Prevent text selection during gameplay */
+  user-select: none;
+  -webkit-user-select: none;
+  /* Prevent default touch behaviors (pull-to-refresh, etc.) */
+  touch-action: none;
+}
+
+/* ============================================================
+   3. GAME WRAPPER — full screen container
+============================================================ */
+#game-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+/* ============================================================
+   4. HUD — Heads Up Display bar
+============================================================ */
+#hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--hud-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  /* Glassmorphism strip */
+  background: rgba(10, 10, 30, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.3);
+  z-index: 10;                       /* Always above the canvas */
+}
+
+#hud-left,
+#hud-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 80px;
+}
+
+#hud-center {
+  flex: 1;
+  text-align: center;
+}
+
+/* Small "SCORE" / "BEST" label above numbers */
+.hud-label {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--color-text-dim);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Score numbers */
+#score-display,
+#highscore-display {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--color-accent);
+  letter-spacing: 0.05em;
+  line-height: 1;
+  /* Smooth count-up animation */
+  transition: transform 0.1s ease;
+}
+
+/* Score "pop" animation when score increases */
+.score-pop {
+  transform: scale(1.25);
+}
+
+/* Game title in HUD center */
+#game-title {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  color: var(--color-primary);
+  text-shadow: 0 0 12px rgba(124, 58, 237, 0.8);
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   5. CANVAS — fills the remaining space below HUD
+============================================================ */
+#game-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* Pixel-perfect rendering for pixel art if used */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ============================================================
+   6. OVERLAYS — start, game over, pause screens
+============================================================ */
+.overlay {
+  position: absolute;
+  inset: 0;                          /* Covers entire #game-wrapper */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  background: var(--color-overlay-bg);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 20;                       /* Above HUD and canvas */
+  padding: 24px;
+  /* Fade in animation */
+  animation: overlayFadeIn 0.35s ease forwards;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Utility class — hide any element */
+.hidden {
+  display: none !important;
+}
+
+/* ============================================================
+   7. OVERLAY TYPOGRAPHY
+============================================================ */
+.overlay-title {
+  font-size: clamp(28px, 7vw, 56px);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  /* Purple glow */
+  color: var(--color-text);
+  text-shadow:
+    0 0 10px rgba(124, 58, 237, 0.9),
+    0 0 30px rgba(124, 58, 237, 0.5),
+    0 0 60px rgba(124, 58, 237, 0.2);
+  /* Pulsing glow animation */
+  animation: titlePulse 2.5s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+  0%, 100% { text-shadow:
+    0 0 10px rgba(124, 58, 237, 0.9),
+    0 0 30px rgba(124, 58, 237, 0.5); }
+  50% { text-shadow:
+    0 0 20px rgba(124, 58, 237, 1),
+    0 0 50px rgba(124, 58, 237, 0.8),
+    0 0 80px rgba(124, 58, 237, 0.4); }
+}
+
+.overlay-subtitle {
+  font-size: clamp(12px, 2.5vw, 18px);
+  color: var(--color-text-dim);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* Controls hint on start screen */
+.overlay-controls-hint {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--color-text-dim);
+  letter-spacing: 0.1em;
+  background: rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: var(--border-radius);
+  padding: 12px 24px;
+}
+
+/* Game Over stats panel */
+#gameover-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 280px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius);
+  padding: 20px 24px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--color-text-dim);
+  text-transform: uppercase;
+}
+
+#final-score,
+#final-highscore {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--color-accent);
+}
+
+/* ============================================================
+   8. BUTTONS
+============================================================ */
+.game-btn {
+  font-family: var(--font-game);
+  font-size: clamp(12px, 2vw, 15px);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 16px 48px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  /* Glow shadow */
+  box-shadow:
+    0 0 12px rgba(124, 58, 237, 0.5),
+    0 4px 24px rgba(124, 58, 237, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.game-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow:
+    0 0 20px rgba(124, 58, 237, 0.8),
+    0 8px 32px rgba(124, 58, 237, 0.5);
+}
+
+.game-btn:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow:
+    0 0 8px rgba(124, 58, 237, 0.4);
+}
+
+/* Ripple effect on button click */
+.game-btn::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  width: 0;
+  height: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.5s ease, height 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+}
+
+.game-btn.ripple::after {
+  width: 300px;
+  height: 300px;
+  opacity: 0;
+}
+
+/* ============================================================
+   9. PAUSE BUTTON — floating top-right corner during play
+============================================================ */
+#pause-btn {
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  background: rgba(124, 58, 237, 0.2);
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  border-radius: 8px;
+  color: var(--color-text);
+  cursor: pointer;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+#pause-btn:hover {
+  background: rgba(124, 58, 237, 0.45);
+}
+
+/* ============================================================
+   10. POWER-UP / COIN NOTIFICATION TOAST
+    Shown briefly when player picks up a power-up
+============================================================ */
+#powerup-toast {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  border-radius: 50px;
+  padding: 8px 20px;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--color-success);
+  text-transform: uppercase;
+  z-index: 15;
+  /* Hidden by default — shown/hidden by game.js */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+#powerup-toast.visible {
+  opacity: 1;
+}
+
+/* ============================================================
+   11. MOBILE RESPONSIVE ADJUSTMENTS
+============================================================ */
+@media (max-width: 480px) {
+  #hud {
+    padding: 0 12px;
+  }
+
+  #game-title {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+  }
+
+  #score-display,
+  #highscore-display {
+    font-size: 18px;
+  }
+
+  .game-btn {
+    padding: 14px 36px;
+  }
+
+  .overlay-controls-hint {
+    gap: 16px;
+    font-size: 10px;
+    padding: 10px 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .overlay-controls-hint {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* ============================================================
+   12. LANDSCAPE MOBILE ADJUSTMENTS
+============================================================ */
+@media (max-height: 480px) and (orientation: landscape) {
+  #hud {
+    height: 42px;
+  }
+
+  .overlay {
+    gap: 12px;
+  }
+
+  .overlay-title {
+    font-size: 26px;
+  }
+
+  .game-btn {
+    padding: 10px 32px;
+    font-size: 12px;
+  }
+
+  #gameover-stats {
+    padding: 12px 20px;
+  }
+}

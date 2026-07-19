@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Shadow Sprint - An original HTML5 endless runner game." />
+  <title>Shadow Sprint - Endless Runner</title>
+
+  <!-- Preconnect to Google Fonts for faster load -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Orbitron: futuristic game font for score/title display -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       GAME WRAPPER — centers everything on screen
+  ============================================================ -->
+  <div id="game-wrapper">
+
+    <!-- ============================================================
+         HUD — Heads Up Display (score, high score, lives)
+         Sits on top of the canvas during gameplay
+    ============================================================ -->
+    <div id="hud">
+      <div id="hud-left">
+        <span class="hud-label">SCORE</span>
+        <span id="score-display">0</span>
+      </div>
+      <div id="hud-center">
+        <span id="game-title">SHADOW SPRINT</span>
+      </div>
+      <div id="hud-right">
+        <span class="hud-label">BEST</span>
+        <span id="highscore-display">0</span>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         MAIN CANVAS — all game graphics are drawn here
+         Width and height are set dynamically in game.js
+    ============================================================ -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- ============================================================
+         START SCREEN — shown before the game begins
+    ============================================================ -->
+    <div id="start-screen" class="overlay">
+      <h1 class="overlay-title">SHADOW SPRINT</h1>
+      <p class="overlay-subtitle">Run. Dodge. Survive.</p>
+      <div class="overlay-controls-hint">
+        <span>⬅ ➡ Switch Lanes</span>
+        <span>SPACE / ↑ Jump</span>
+      </div>
+      <button id="start-btn" class="game-btn">START GAME</button>
+    </div>
+
+    <!-- ============================================================
+         GAME OVER SCREEN — shown when the player dies
+    ============================================================ -->
+    <div id="gameover-screen" class="overlay hidden">
+      <h2 class="overlay-title">GAME OVER</h2>
+      <div id="gameover-stats">
+        <div class="stat-row">
+          <span class="stat-label">YOUR SCORE</span>
+          <span id="final-score">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">COINS</span>
+          <span id="final-coins" style="font-size:20px;color:#f59e0b;">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">BEST SCORE</span>
+          <span id="final-highscore">0</span>
+        </div>
+      </div>
+      <button id="restart-btn" class="game-btn">PLAY AGAIN</button>
+    </div>
+
+    <!-- ============================================================
+         PAUSE SCREEN — shown when player pauses the game
+    ============================================================ -->
+    <div id="pause-screen" class="overlay hidden">
+      <h2 class="overlay-title">PAUSED</h2>
+      <button id="resume-btn" class="game-btn">RESUME</button>
+    </div>
+
+    <!-- ============================================================
+         PAUSE BUTTON — top corner button during gameplay
+    ============================================================ -->
+    <button id="pause-btn" class="hidden" aria-label="Pause Game">⏸</button>
+
+  </div><!-- end #game-wrapper -->
+
+  <!-- Main game engine — loaded at end of body so DOM is ready -->
+  <script src="game.js"></script>
+
+</body>
+</html>
